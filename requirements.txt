@@ -1,0 +1,10 @@
+flask
+streamlit
+requests
+pandas
+beautifulsoup4
+transformers
+torch
+gtts
+googletrans
+gunicorn
