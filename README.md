@@ -20,10 +20,7 @@
    - [Backend Deployment](#1-backend-deployment)
    - [Frontend Deployment](#2-frontend-deployment)
    - [Testing Your Deployment](#testing-your-deployment)
-9. [Local Testing Procedures](#local-testing-procedures)
-10. [Example Hugging Face Deployments](#example-hugging-face-deployments)
-11. [Additional Notes](#additional-notes)
-12. [License](#license)
+
 
 ---
 
@@ -96,3 +93,101 @@
    ```bash
    git clone https://github.com/kumar00neelesh/echolens.git
    cd echolens
+   conda create --name myenv python=3.9 -y
+   pip install -r requirements.txt
+   ```
+## Running Locally
+```bash
+   python api.py
+   streamlit run app.py
+```
+## Deployment on Huggingface Space
+### 1. Backend Deployment
+
+1. **Create a new Hugging Face Space**  
+   - Go to [Hugging Face Spaces](https://huggingface.co/spaces) and create a new Space.  
+   - Select **“Blank”**, **“Docker”**, or **“Flask”** template, whichever suits your preference.
+
+2. **Upload Your Backend Files**  
+   - Typical backend files might include:
+     - `api.py` (or `app.py`, if you renamed it to match Hugging Face’s entry-point expectations)
+     - `news_scraper.py`
+     - `sentiment_analysis.py`
+     - `text2speech.py`
+     - `requirements.txt`
+   - Make sure you include all dependencies in `requirements.txt`.
+
+3. **Set the Entrypoint**  
+   - If you’re using a **Flask** template, rename `api.py` to `app.py` if needed.
+   - At the bottom of your main file (`api.py` or `app.py`), ensure you have something like:
+     ```python
+     if __name__ == '__main__':
+         app.run(host='0.0.0.0', port=7860)
+     ```
+     so the server can start on the expected port.
+
+4. **Commit and Push**  
+   - Once uploaded, commit your changes. 
+   - Wait for the Space to build.  
+   - The resulting URL might look like `https://<your-backend>.hf.space`.
+
+5. **Test the Backend**  
+   - Open your backend Space URL in the browser to ensure the server starts.
+   - For example, if your backend has an endpoint `/fetch_articles`, you can visit:
+     ```
+     https://<your-backend>.hf.space/fetch_articles?company=Google
+     ```
+     and check if you receive JSON data.
+
+---
+
+### 2. Frontend Deployment
+
+1. **Create another Hugging Face Space** for the **frontend**.  
+   - This time, select **“Streamlit”** as the template.
+
+2. **Upload Your Frontend Files**  
+   - Common frontend files might include:
+     - `app.py` (Streamlit code)
+     - `requirements.txt`
+   - Update `requirements.txt` to include everything you need for Streamlit (and any additional libraries used in `app.py`).
+
+3. **Update Backend URL**  
+   - In your frontend code (e.g., `app.py`), ensure you point to your newly created backend Space:
+     ```python
+     API_URL = "https://<your-backend>.hf.space"
+     ```
+     Replace `<your-backend>.hf.space` with your actual backend URL.
+
+4. **Commit and Push**  
+   - After uploading your code, commit and wait for the build.
+   - The frontend Space URL might look like `https://<your-frontend>.hf.space`.
+
+5. **Access Your Streamlit App**  
+   - Open `https://<your-frontend>.hf.space` in your browser.
+   - Enter a company name or perform any other actions to confirm your app is working correctly and fetching data from the backend.
+
+---
+
+### 3. Testing Your Deployment
+
+After both Spaces have deployed successfully, verify they are communicating properly:
+
+1. **Backend Check**  
+   - Directly visit an endpoint (e.g., `https://<your-backend>.hf.space/fetch_articles?company=Netflix`) to see JSON output.
+
+2. **Frontend Check**  
+   - Go to `https://<your-frontend>.hf.space`.
+   - Enter a company name (e.g., “Amazon”) and click **Fetch News**.  
+   - Confirm the articles are displayed with sentiment.  
+   - If you have text-to-speech, test that functionality too.
+
+3. **Common Issues**  
+   - **CORS or networking** issues: Make sure your backend doesn’t restrict cross-origin requests.  
+   - **Mismatched URLs**: Ensure `API_URL` in your frontend is correct.  
+   - **Requirements**: If your code fails to load or import certain libraries, verify `requirements.txt`.
+
+---
+
+**Congratulations!** You have now deployed both backend and frontend to Hugging Face Spaces. If you encounter any issues, check the Space logs or open an issue on your repository.
+
